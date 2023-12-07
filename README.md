@@ -6,13 +6,13 @@ MetaScript: Few-Shot Handwritten Chinese Content Generation via Style-based Gene
     <br />
     <a href="https://github.com/Bujiazi"><strong>Jiazi Bu</strong></a>
     &nbsp;
-    <a href="https://github.com/"><strong>Qirui Li</strong></a>
+    <a href="https://github.com/IApple233"><strong>Qirui Li</strong></a>
     &nbsp;
     <a href="https://github.com/Loping151"><strong>Kailing Wang</strong></a>
     &nbsp;
     <a href="https://github.com/xxyQwQ"><strong>Xiangyuan Xue</strong></a>
     &nbsp;
-    <a href="https://github.com/"><strong>Zhiyuan Zhang</strong></a>
+    <a href="https://github.com/wdask"><strong>Zhiyuan Zhang</strong></a>
     <br />
 </p>
 
