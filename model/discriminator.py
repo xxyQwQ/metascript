@@ -13,12 +13,13 @@ class EnhancedDiscriminator(nn.Module):
             DownsampleBlock(64, 128),
             DownsampleBlock(128, 256),
             DownsampleBlock(256, 512),
+            DownsampleBlock(512, 512),
             nn.Flatten(),
         )
 
-        self.reality_classifier = nn.Linear(512 * 8 * 8, 1)
-        self.writer_classifier = nn.Linear(512 * 8 * 8, writer_count)
-        self.character_classifier = nn.Linear(512 * 8 * 8, character_count)
+        self.reality_classifier = nn.Linear(512 * 4 * 4, 1)
+        self.writer_classifier = nn.Linear(512 * 4 * 4, writer_count)
+        self.character_classifier = nn.Linear(512 * 4 * 4, character_count)
 
     def forward(self, input):
         feature = self.feature_extractor(input)
