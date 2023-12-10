@@ -7,8 +7,8 @@ class SquarePad(object):
     def __call__(self, image):
         _, width, height = image.shape
         target_size = max(width, height)
-        pad_width = (target_size - width) // 2
-        pad_height = (target_size - height) // 2
+        pad_width = (target_size - width) // 2 + 10
+        pad_height = (target_size - height) // 2 + 10
         return F.pad(image, (pad_width, pad_height, pad_width, pad_height), 'constant', 0)
 
 
@@ -17,13 +17,6 @@ class ColorReverse(object):
         image = 1 - image
         image /= image.max()
         return image
-
-
-def hinge_loss(input, positive=True):
-    if positive:
-        return torch.relu(1 - input).mean()
-    else:
-        return torch.relu(1 + input).mean()
 
 
 def plot_sample(reference_image, template_image, script_image, result_image):

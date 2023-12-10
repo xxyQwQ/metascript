@@ -3,18 +3,25 @@ defaults:
     - override hydra/job_logging: none
 
 parameter:
-    dataset_path: ../dataset
+    dataset_path: /home/xuexiangyuan/data/metascript
     checkpoint_path: ./checkpoint/training_${now:%Y%m%d%H%M%S}
     device: gpu
-    batch_size: 16
+    batch_size: 32
     num_workers: 16
-    learning_rate: 1e-4
-    reference_count: 1
-    loss_function:
-        weight_adversarial: 1
-        weight_structure: 5
-        weight_style: 5
-        weight_reconstruction: 10
+    reference_count: 4
+    generator:
+        learning_rate: 1e-4
+        loss_function:
+            weight_adversarial: 1
+            weight_classification: 0.1
+            weight_structure: 1
+            weight_style: 1
+            weight_reconstruction: 10
+    discriminator:
+        learning_rate: 5e-4
+        loss_function:
+            weight_adversarial: 1
+            weight_classification: 0.1
     num_iterations: 500000
     report_interval: 100
     save_interval: 10000

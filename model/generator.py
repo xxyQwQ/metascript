@@ -90,7 +90,7 @@ class DenormalizationGenerator(nn.Module):
             result = self.denorm[i](result, structure[i], style)
             if i < self.num_blocks - 1:
                 result = self.upsample(result)
-        
+
         result = self.tanh(result)
         return result
 
