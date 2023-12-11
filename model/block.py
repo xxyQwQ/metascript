@@ -30,3 +30,18 @@ class UpsampleBlock(nn.Module):
         if injection is not None:
             output = torch.cat((output, injection), dim=1)
         return output
+
+
+class MultilayerPerceptron(nn.Module):
+    def __init__(self, in_channels: int, out_channels: int, hidden_channels: int = 256, hidden_layers: int = 2):
+        super(MultilayerPerceptron, self).__init__()
+        self.network = [nn.Linear(in_channels, hidden_channels), nn.LeakyReLU(0.1, inplace=True)]
+        for _ in range(hidden_layers - 1):
+            self.network.append(nn.Linear(hidden_channels, hidden_channels))
+            self.network.append(nn.LeakyReLU(0.1, inplace=True))
+        self.network.append(nn.Linear(hidden_channels, out_channels))
+        self.network = nn.Sequential(*self.network)
+
+    def forward(self, input):
+        output = self.network(input)
+        return output
