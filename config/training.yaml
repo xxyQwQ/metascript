@@ -15,8 +15,8 @@ parameter:
             weight_adversarial: 1
             weight_classification: 1
             weight_structure: 0.5
-            weight_style: 0.5
-            weight_reconstruction: 10
+            weight_style: 0.1
+            weight_reconstruction: 20
     discriminator:
         learning_rate: 1e-4
         loss_function:

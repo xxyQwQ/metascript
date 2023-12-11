@@ -16,7 +16,7 @@ from utils.logger import Logger
 from utils.dataset import CharacterDataset
 from utils.function import plot_sample
 from model.generator import SynthesisGenerator
-from model.discriminator import EnhancedDiscriminator
+from model.discriminator import MultiscaleDiscriminator
 
 
 @hydra.main(version_base=None, config_path='./config', config_name='training')
@@ -47,7 +47,7 @@ def main(config):
     generator_model = SynthesisGenerator(reference_count=reference_count).to(device)
     generator_model.train()
 
-    discriminator_model = EnhancedDiscriminator(dataset.writer_count, dataset.character_count).to(device)
+    discriminator_model = MultiscaleDiscriminator(dataset.writer_count, dataset.character_count).to(device)
     discriminator_model.train()
 
     # create optimizer
@@ -69,9 +69,11 @@ def main(config):
 
             result_image, template_structure, reference_style = generator_model(reference_image, template_image)
 
-            prediction_reality, prediction_writer, prediction_character = discriminator_model(result_image)
-            loss_generator_adversarial = F.binary_cross_entropy(prediction_reality, torch.ones_like(prediction_reality))
-            loss_generator_classification = F.cross_entropy(prediction_writer, writer_label) + F.cross_entropy(prediction_character, character_label)
+            loss_generator_adversarial = 0
+            loss_generator_classification = 0
+            for prediction_reality, prediction_writer, prediction_character in discriminator_model(result_image):
+                loss_generator_adversarial += F.binary_cross_entropy(prediction_reality, torch.ones_like(prediction_reality))
+                loss_generator_classification += F.cross_entropy(prediction_writer, writer_label) + F.cross_entropy(prediction_character, character_label)
 
             result_structure = generator_model.structure(result_image)
             loss_generator_structure = 0
@@ -92,14 +94,13 @@ def main(config):
 
             loss_discriminator_adversarial = 0
             loss_discriminator_classification = 0
+            for prediction_reality, prediction_writer, prediction_character in discriminator_model(result_image.detach()):
+                loss_discriminator_adversarial += F.binary_cross_entropy(prediction_reality, torch.zeros_like(prediction_reality))
+                loss_discriminator_classification += F.cross_entropy(prediction_writer, writer_label) + F.cross_entropy(prediction_character, character_label)
 
-            prediction_reality, prediction_writer, prediction_character = discriminator_model(result_image.detach())
-            loss_discriminator_adversarial += F.binary_cross_entropy(prediction_reality, torch.zeros_like(prediction_reality))
-            loss_discriminator_classification += F.cross_entropy(prediction_writer, writer_label) + F.cross_entropy(prediction_character, character_label)
-
-            prediction_reality, prediction_writer, prediction_character = discriminator_model(script_image)
-            loss_discriminator_adversarial += F.binary_cross_entropy(prediction_reality, torch.ones_like(prediction_reality))
-            loss_discriminator_classification += F.cross_entropy(prediction_writer, writer_label) + F.cross_entropy(prediction_character, character_label)
+            for prediction_reality, prediction_writer, prediction_character in discriminator_model(script_image):
+                loss_discriminator_adversarial += F.binary_cross_entropy(prediction_reality, torch.ones_like(prediction_reality))
+                loss_discriminator_classification += F.cross_entropy(prediction_writer, writer_label) + F.cross_entropy(prediction_character, character_label)
 
             loss_discriminator = config.parameter.discriminator.loss_function.weight_adversarial * loss_discriminator_adversarial + config.parameter.discriminator.loss_function.weight_classification * loss_discriminator_classification
             loss_discriminator.backward()
