@@ -16,13 +16,20 @@ MetaScript: Few-Shot Handwritten Chinese Content Generation via Generative Adver
     <br />
 </p>
 
+This project aims to generate handwritten Chinese contents within several style references based on generative adversarial networks. Our model can generate 128x128 resolution images of handwritten Chinese characters. Then the complete content is synthesized with traditional computer vision techniques. Some results are shown as follows.
+
+![reference](assets/sample/reference.png)
+
+> 哪里贵了？这么多年都是这个价格好吧，不要睁着眼睛乱说，国货品牌很难的，我跟花西子跟了多少年，它怎么起来的我是最知道的一个，它就差把它们家掏给我了，差点姓李了，有的时候也找找自己的原因，这么多年了工资涨没涨，有没有认真工作。
+
+![result](assets/sample/result.png)
+
 ## Requirements
 
 To ensure the code runs correctly, following packages are required:
 
 * `python`
 * `hydra`
-* `opencv`
 * `pytorch`
 
 You can install them following the instructions below.
@@ -40,23 +47,17 @@ You can install them following the instructions below.
     pip install torch==1.12.1+cu113 torchvision==0.13.1+cu113 torchaudio==0.12.1 --extra-index-url https://download.pytorch.org/whl/cu113
     ```
 
-* Install `hydra` and `opencv`:
+* Install `hydra`:
   
     ```bash
     pip install hydra-core
-    pip install opencv-python
     ```
 
 Latest version is recommended for all the packages, but make sure that your CUDA version is compatible with your `pytorch`.
 
 ## Training
 
-The dataset used for training is mainly adapted from [CASIA-HWDB-1.1](http://www.nlpr.ia.ac.cn/databases/handwriting/Offline_database.html). We put the characters by the same writer into the same directory. The folder name represents the writer and the file name represents the character. We render the template characters from [Source-Han-Sans](https://github.com/adobe-fonts/source-han-sans). You can download the dataset [here](https://drive.google.com/file/d/1iwa6RfWIPXzb9J4ASp1H4ljYvwy8Va5c/view) and extract it. If you have installed `gdown`, this step can be done by running the following commands:
-
-```bash
-gdown 1iwa6RfWIPXzb9J4ASp1H4ljYvwy8Va5c -O dataset.zip
-unzip dataset.zip
-```
+The dataset used for training is mainly adapted from [CASIA-HWDB-1.1](http://www.nlpr.ia.ac.cn/databases/handwriting/Offline_database.html). We put the characters by the same writer into the same directory. The folder name represents the writer and the file name represents the character. We render the template characters from [Source-Han-Sans](https://github.com/adobe-fonts/source-han-sans). You can download the dataset [here](https://pan.baidu.com/s/11T8jgBQUh8f0-H5FbuO84w?pwd=1024) and extract it.
 
 You can also build the dataset by yourself for customization. The directory structure is as follows:
 
@@ -90,7 +91,7 @@ python training.py
 
 The template configuration file `config/inference.yaml` contains necessary arguments for inference. You should correctly set `model_path` as the path to your generator model. Then `reference_path` should be the path to your reference directory, which contains images for style reference. We provide `assets/reference` as an example.
 
-We provide a pretrained model [here](), whose `reference_count` is 4. Notice that `reference_count` means the number of reference images used by the model, which should be consistent with your model setting. If you provide more reference images than this number, only a subset of them will be actually used. Do not modify it unless you know what you are doing.
+We provide a pretrained model [here](https://pan.baidu.com/s/1oSAKu_DHIN2pIvJoilsrQw?pwd=1024), whose `reference_count` is 4. Notice that `reference_count` means the number of reference images used by the model, which should be consistent with your model setting. If you provide more reference images than this number, only a subset of them will be actually used. Do not modify it unless you know what you are doing.
 
 Fill your input text in `target_text` and run the following command to generate the result:
 

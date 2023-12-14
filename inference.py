@@ -5,7 +5,6 @@ import pickle
 
 import hydra
 import numpy as np
-import matplotlib.pyplot as plt
 from PIL import Image
 from tqdm import tqdm
 from omegaconf import OmegaConf
@@ -14,58 +13,8 @@ import torch
 from torchvision import transforms
 
 from utils.logger import Logger
-from utils.function import SquarePad, ColorReverse, RecoverNormalize
+from utils.function import SquarePad, ColorReverse, RecoverNormalize, SciptTyper
 from model.generator import SynthesisGenerator
-
-
-def fetch_template(target_text):
-    with open('./assets/dictionary/dictionary.pkl', 'rb') as file:
-        dictionary = pickle.load(file)
-    remap = {value: key for key, value in dictionary.items()}
-    template_list = []
-    for character in tqdm(target_text, desc='fetching template'):
-        name = remap.get(character, None)
-        if name is None:
-            raise ValueError('character {} is not supported'.format(character))
-        image = Image.open(os.path.join('./assets/template', '{}.png'.format(name)))
-        template_list.append(image)
-    return template_list
-
-
-def fetch_reference(reference_path):
-    reference_list = []
-    file_list = glob.glob('{}/*'.format(reference_path))
-    for file in tqdm(file_list, desc='fetching reference'):
-        image = Image.open(file)
-        reference_list.append(image)
-    return reference_list
-
-
-def display_images(image_list, cols, overlap=0.1):
-    max_width = max(image.width for image in image_list)
-    max_height = max(image.height for image in image_list)
-
-    total_rows = len(image_list) // cols + (len(image_list) % cols > 0)
-
-    overlap_pixels_x = int(max_width * overlap)
-
-    big_image = Image.new('RGBA', (cols * (max_width - overlap_pixels_x), total_rows * (max_height)), (255, 255, 255, 0))
-
-    for i in range(total_rows):
-        for j in range(cols):
-            index = i * cols + j
-            if index < len(image_list) and image_list[index] is not None:
-                image = image_list[index].convert('RGBA')
-
-                # 计算偏移量，考虑重叠
-                offset_x = j * (max_width - overlap_pixels_x)
-                offset_y = i * (max_height)
-
-                big_image.paste(image, (offset_x, offset_y), mask=image)
-
-    plt.imshow(big_image)
-    plt.axis('off')
-    plt.savefig("./result.png")
 
 
 @hydra.main(version_base=None, config_path='./config', config_name='inference')
@@ -100,30 +49,62 @@ def main(config):
     ])
     output_transform = transforms.Compose([
         RecoverNormalize(),
-        transforms.Resize((128, 128), antialias=True),
+        transforms.Resize((64, 64), antialias=True),
         ColorReverse(),
         transforms.ToPILImage()
     ])
+    align_transform = transforms.Compose([
+        transforms.Grayscale(),
+        transforms.Resize((64, 64), antialias=True),
+    ])
 
-    # fetch data
-    template_list = fetch_template(target_text)
-    reference_list = fetch_reference(reference_path)
+    # fetch reference
+    reference_list = []
+    file_list = glob.glob('{}/*'.format(reference_path))
+    for file in tqdm(file_list, desc='fetching reference'):
+        image = Image.open(file)
+        reference_list.append(image)
     while len(reference_list) < reference_count:
         reference_list.extend(reference_list)
     reference_list = reference_list[:reference_count]
-
-    # generate script
-    result_list = []
+    reference_image = [np.array(align_transform(image)) for image in reference_list]
+    reference_image = np.concatenate(reference_image, axis=1)
+    Image.fromarray(reference_image).save(os.path.join(checkpoint_path, 'reference.png'))
     reference = [input_transform(image) for image in reference_list]
     reference = torch.cat(reference, dim=0).unsqueeze(0).to(device)
-    for image in tqdm(template_list, desc='generating script'):
-        template = input_transform(image).unsqueeze(0).to(device)
-        with torch.no_grad():
-            result, _, _ = generator_model(reference, template)
-        result = output_transform(result.squeeze(0).detach().cpu())
-        result_list.append(result)
+    print('fetch {} reference images\n'.format(reference_count))
 
-    display_images(result_list, 10)
+    # load dictionary
+    with open('./assets/dictionary/character.pkl', 'rb') as file:
+        character_map = pickle.load(file)
+    character_remap = {value: key for key, value in character_map.items()}
+    with open('./assets/dictionary/punctuation.pkl', 'rb') as file:
+        punctuation_map = pickle.load(file)
+    punctuation_remap = {value: key for key, value in punctuation_map.items()}
+    print('load dictionary from archive\n')
+
+    # generate script
+    script_typer = SciptTyper()
+    for word in tqdm(target_text, desc='generating script'):
+        if word in character_remap.keys():
+            image = Image.open(os.path.join('./assets/character', '{}.png'.format(character_remap[word])))
+            template = input_transform(image).unsqueeze(0).to(device)
+            with torch.no_grad():
+                result, _, _ = generator_model(reference, template)
+            result = output_transform(result.squeeze(0).detach().cpu())
+            script_typer.insert_word(result, type='character')
+        elif word in punctuation_remap.keys():
+            image = Image.open(os.path.join('./assets/punctuation', '{}.png'.format(punctuation_remap[word])))
+            result = align_transform(image)
+            script_typer.insert_word(result, type='punctuation')
+        else:
+            raise ValueError('word {} is not supported'.format(word))
+    print('generate {} words from text\n'.format(len(target_text)))
+    
+    # save result
+    result_image = script_typer.plot_result()
+    result_image.save(os.path.join(checkpoint_path, 'result.png'))
+    print('save inference result in: {}\n'.format(checkpoint_path))
 
 
 if __name__ == '__main__':

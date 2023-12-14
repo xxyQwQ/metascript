@@ -5,7 +5,7 @@ import pickle
 class Logger:
     def __init__(self, path):
         self.terminal = sys.stdout
-        self.file = open(path, "w")
+        self.file = open(path, "w", encoding='utf-8')
 
     def write(self, message):
         self.terminal.write(message)
