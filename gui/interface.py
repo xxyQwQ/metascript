@@ -6,7 +6,7 @@ from time import sleep, time
 
 _TITLE = "Metascript Demo"
 
-_GPU_NUM = 1
+_GPU_NUM = 2
 _GPU_INDEX = 0
 
 MS = MetaScript('./dataset/script', './checkpoint/generator.pth')
@@ -94,4 +94,4 @@ def launch():
         
     demo.queue()
     logging.info("Starting server...")
-    demo.launch(server_port=8111, share=True)
+    demo.launch(server_port=8111)
