@@ -52,13 +52,19 @@ class SciptTyper(object):
         self.__insert_matrix(matrix, blank=False)
         if type == 'punctuation':
             self.__insert_matrix(blank, blank=True)
-
+            
     def plot_result(self):
         if self.result_line is not None and self.result_cursor > 0:
             self.__insert_line()
         result = np.concatenate(self.result_list, axis=0)
         return Image.fromarray(result)
 
+    def plot_result_gui(self):
+        result_list = self.result_list.copy()
+        if self.result_line is not None and self.result_cursor > 0:
+            result_list.append(self.result_line)
+        result = np.concatenate(result_list, axis=0)
+        return result
 
 class SquarePad(object):
     def __call__(self, image):
