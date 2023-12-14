@@ -1,0 +1,17 @@
+defaults:
+    - override hydra/hydra_logging: none
+    - override hydra/job_logging: none
+
+parameter:
+    model_path: ../generator.pth
+    reference_path: ./assets/reference
+    checkpoint_path: ./checkpoint/training_${now:%Y%m%d%H%M%S}
+    device: gpu
+    reference_count: 4
+    target_text: 苟利国家生死以岂因祸福避趋之
+
+hydra:
+    run:
+        dir: ${parameter.checkpoint_path}
+    sweep:
+        dir: ${parameter.checkpoint_path}

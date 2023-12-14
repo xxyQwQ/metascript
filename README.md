@@ -1,5 +1,5 @@
 <h1 align="center">
-MetaScript: Few-Shot Handwritten Chinese Content Generation via Style-based Generative Adversarial Networks
+MetaScript: Few-Shot Handwritten Chinese Content Generation via Generative Adversarial Networks
 </h1>
 <p align="center">
     Project of AI3604 Computer Vision, 2023 Fall, SJTU
@@ -30,8 +30,8 @@ You can install them following the instructions below.
 * Create a new conda environment and activate it:
   
     ```bash
-    conda create -n metaswap python=3.10
-    conda activate metaswap
+    conda create -n metascript python=3.10
+    conda activate metascript
     ```
 
 * Install [pytorch](https://pytorch.org/get-started/previous-versions/) with appropriate CUDA version, e.g.
@@ -84,4 +84,16 @@ Run the following command to train the model:
 
 ```bash
 python training.py
+```
+
+## Inference
+
+The template configuration file `config/inference.yaml` contains necessary arguments for inference. You should correctly set `model_path` as the path to your generator model. Then `reference_path` should be the path to your reference directory, which contains images for style reference. We provide `assets/reference` as an example.
+
+We provide a pretrained model [here](), whose `reference_count` is 4. Notice that `reference_count` means the number of reference images used by the model, which should be consistent with your model setting. If you provide more reference images than this number, only a subset of them will be actually used. Do not modify it unless you know what you are doing.
+
+Fill your input text in `target_text` and run the following command to generate the result:
+
+```bash
+python inference.py
 ```

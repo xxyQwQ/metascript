@@ -19,6 +19,12 @@ class ColorReverse(object):
         return image
 
 
+class RecoverNormalize(object):
+    def __call__(self, image):
+        image = 0.5 * image + 0.5
+        return image
+
+
 def plot_sample(reference_image, template_image, script_image, result_image):
     def plot_grid(input):
         batch_size = input.shape[0]
