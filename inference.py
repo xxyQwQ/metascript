@@ -60,7 +60,7 @@ def main(config):
 
     # fetch reference
     reference_list = []
-    file_list = glob.glob('{}/*'.format(reference_path))
+    file_list = glob.glob('{}/*.png'.format(reference_path))
     for file in tqdm(file_list, desc='fetching reference'):
         image = Image.open(file)
         reference_list.append(image)
