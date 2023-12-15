@@ -16,7 +16,7 @@ MetaScript: Few-Shot Handwritten Chinese Content Generation via Generative Adver
     <br />
 </p>
 
-This project aims to generate handwritten Chinese contents within several style references based on generative adversarial networks. Our model can generate 128x128 resolution images of handwritten Chinese characters. Then the complete content is synthesized with traditional computer vision techniques. Some results are shown as follows.
+This project aims to generate handwritten Chinese content within several style references based on generative adversarial networks. Our model can generate 128x128 resolution images of handwritten Chinese characters. Then the complete content is synthesized with traditional computer vision techniques. Some results are shown as follows.
 
 ![reference](assets/sample/reference.png)
 
@@ -26,7 +26,7 @@ This project aims to generate handwritten Chinese contents within several style 
 
 ## Requirements
 
-To ensure the code runs correctly, following packages are required:
+To ensure the code runs correctly, the following packages are required:
 
 * `python`
 * `hydra`
@@ -53,7 +53,7 @@ You can install them following the instructions below.
     pip install hydra-core
     ```
 
-Latest version is recommended for all the packages, but make sure that your CUDA version is compatible with your `pytorch`.
+The latest version is recommended for all the packages, but make sure that your CUDA version is compatible with your `pytorch`.
 
 ## Training
 
@@ -89,9 +89,9 @@ python training.py
 
 ## Inference
 
-The template configuration file `config/inference.yaml` contains necessary arguments for inference. You should correctly set `model_path` as the path to your generator model. Then `reference_path` should be the path to your reference directory, which contains images for style reference. We provide `assets/reference` as an example.
+The template configuration file `config/inference.yaml` contains the necessary arguments for inference. You should correctly set `model_path` as the path to your generator model. Then `reference_path` should be the path to your reference directory, which contains images for style reference. We provide `assets/reference` as an example.
 
-We provide a pretrained model [here](https://pan.baidu.com/s/1oSAKu_DHIN2pIvJoilsrQw?pwd=1024), whose `reference_count` is 4. Notice that `reference_count` means the number of reference images used by the model, which should be consistent with your model setting. If you provide more reference images than this number, only a subset of them will be actually used. Do not modify it unless you know what you are doing.
+We provide a pre-trained model [here](https://pan.baidu.com/s/1oSAKu_DHIN2pIvJoilsrQw?pwd=1024), whose `reference_count` is 4. Notice that `reference_count` means the number of reference images used by the model, which should be consistent with your model setting. If you provide more reference images than this number, only a subset of them will be actually used. Do not modify it unless you know what you are doing.
 
 Fill your input text in `target_text` and run the following command to generate the result:
 
@@ -109,6 +109,6 @@ pip install gradio # recommend 4.9.0 or later
 
 Then run
 ```bash
-python -m GUI [--port PORT]
+python -m gui [--port PORT]
 ```
 to launch GUI locally. The default port is 8111.
