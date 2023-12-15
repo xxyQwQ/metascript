@@ -98,3 +98,17 @@ Fill your input text in `target_text` and run the following command to generate 
 ```bash
 python inference.py
 ```
+
+## GUI Demo and API
+
+We've built a GUI module inside this project. To run GUI, you need to install gradio in your venv:
+
+```bash
+pip install gradio # recommend 4.9.0 or later
+```
+
+Then run
+```bash
+python -m GUI [--port PORT]
+```
+to launch GUI locally. The default port is 8111.
