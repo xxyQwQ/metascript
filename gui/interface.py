@@ -9,6 +9,14 @@ _TITLE = "Metascript Demo"
 _GPU_NUM = 2
 _GPU_INDEX = 0
 
+css = """
+.centered-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+"""
+
 MS = MetaScript('./dataset/script', './checkpoint/generator.pth')
 
 def next_gpu():
@@ -18,7 +26,13 @@ def next_gpu():
 
 t2str = lambda t: '{:.3f} s'.format(t)
 
+def clear():
+    return None, None, None, None
+
 def generate(image1, image2, image3, image4, text, tprt, tprtspeed, size, width):
+    if tprt and len(text) > 300 or len(text) > 1000:
+        yield np.ones((1, 1)), 'Too long! you are occupying to mush resource! Try disable typewriter or shorten your text: {}/allowed {}'.format(len(text), 1000), '-1', t2str(-1)
+
     path = new_path()
     gpu = next_gpu() + 1
     info = ''
@@ -39,7 +53,7 @@ def generate(image1, image2, image3, image4, text, tprt, tprtspeed, size, width)
     for succ, out in MS.generate(text, reference, size, width, path):
         tot += time() - t
         if not succ:
-            yield np.ones((1, 1)), 'Word {} is not supported'.format(out), '-1', t2str(-1)
+            yield None, 'Word {} is not supported'.format(out), '-1', t2str(-1)
             return
         yield out, info, gpu, t2str(tot)
         if tprt:
@@ -51,7 +65,7 @@ def random_reference():
     return image1, image2, image3, image4
 
 def launch(port=8111):
-    with gr.Blocks(title=_TITLE) as demo:
+    with gr.Blocks(title=_TITLE, css=css) as demo:
         with gr.Row():    
             with gr.Column():
                 gr.Markdown("# Metascript Demo")
@@ -64,18 +78,24 @@ def launch(port=8111):
                 gr.Markdown("### Reference Images")
                 gr.Markdown("Upload 1~4 images if you want to use your own style. Otherwise, we will randomly choose some images for you. You can check the randomly chosen images as upload examples.")
                 with gr.Row():
-                    img_ref1 = gr.Image(label="Ref 1")
-                    img_ref2 = gr.Image(label="Ref 2")
-                    img_ref3 = gr.Image(label="Ref 3")
-                    img_ref4 = gr.Image(label="Ref 4")
                     with gr.Column():
-                        gpu = gr.Textbox(label="Using GPU")
-                        infert = gr.Textbox(label="Inference time")
+                        with gr.Row():
+                            img_ref1 = gr.Image(label="Ref 1")
+                            img_ref2 = gr.Image(label="Ref 2")
+                        with gr.Row():
+                            img_ref3 = gr.Image(label="Ref 3")
+                            img_ref4 = gr.Image(label="Ref 4")
+                    with gr.Column():
+                        with gr.Row():
+                            gpu = gr.Textbox(label="Using GPU")
+                            infert = gr.Textbox(label="Inference time")
                         info = gr.Textbox(label="Info", placeholder="")
 
         with gr.Row():
             with gr.Column():
-                rand_buttom = gr.Button("Select Random Reference")
+                with gr.Row():
+                    rand_buttom = gr.Button("Select Random Reference")
+                    clear_bottom = gr.Button("Clear Current Reference")
                 with gr.Row():
                     tprt = gr.Checkbox(label="Output like typewriter", value=True)
                     tprtspeed = gr.Slider(
@@ -112,6 +132,12 @@ def launch(port=8111):
             outputs=[img_ref1, img_ref2, img_ref3, img_ref4]
         )
 
+        clear_bottom.click(
+            fn=clear,
+            inputs=[],
+            outputs=[img_ref1, img_ref2, img_ref3, img_ref4]
+        )
+        
         gen_buttom.click(
             fn=generate,
             inputs=[img_ref1, img_ref2, img_ref3, img_ref4, text2gen, tprt, tprtspeed, wsize, width],
