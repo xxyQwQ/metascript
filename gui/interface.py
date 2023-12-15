@@ -80,9 +80,9 @@ def launch(port=8111):
                     tprt = gr.Checkbox(label="Output like typewriter", value=True)
                     tprtspeed = gr.Slider(
                         label="Typewriter Speed",
-                        minimum=0.01,
-                        maximum=1,
-                        step=0.1,
+                        minimum=0,
+                        maximum=2,
+                        step=0.05,
                         value=0.6
                         )
                 wsize = gr.Slider(
