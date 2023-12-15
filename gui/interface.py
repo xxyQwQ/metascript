@@ -103,7 +103,7 @@ def launch(port=8111):
                         minimum=0,
                         maximum=2,
                         step=0.05,
-                        value=0.6
+                        value=1
                         )
                 wsize = gr.Slider(
                     label="Word Size",
@@ -149,6 +149,7 @@ def launch(port=8111):
                 gr.Markdown("### About")
                 gr.Markdown("This demo is created and maintained by Loping151. See more info at the main site: https://www.loping151.com")
                 gr.Markdown("The main server is at Seattle, USA. The mean network delay is about 200ms.")
+                gr.Markdown("#### You may fail to see the typewriter effect when the network delay is too long or the server is too busy. If this happens, you should refresh the page and turn off the typewriter effect for faster generation.")
         
     demo.queue()
     logging.info("Starting server...")

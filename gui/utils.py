@@ -20,6 +20,8 @@ logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 )
 
+assert torch.cuda.is_available(), 'CUDA is not available'
+
 def new_path():
     current_time = datetime.datetime.now()
     current_time_str = current_time.strftime("%Y-%m-%d %H:%M:%S.%f")

@@ -3,7 +3,7 @@ defaults:
     - override hydra/job_logging: none
 
 parameter:
-    model_path: ../generator.pth
+    model_path: checkpoint/generator.pth
     reference_path: ./assets/reference
     checkpoint_path: ./checkpoint/inference_${now:%Y%m%d%H%M%S}
     device: gpu
