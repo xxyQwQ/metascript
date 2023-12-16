@@ -71,6 +71,7 @@ def generate(image1, image2, image3, image4, text, tprt, tprtspeed, size, width)
         tot += time() - t
         if not succ:
             yield None, 'Word {} is not supported'.format(out), '-1', t2str(-1)
+            return
         yield out, info, gpu, t2str(tot)
         if tprt:
             sleep(tprtspeed)
