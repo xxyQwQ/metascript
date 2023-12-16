@@ -12,7 +12,7 @@ class SciptTyper(object):
         self.word_size = word_size
         self.line_width = line_width
         self.result_list = None
-        self.__insert_line()
+        self.insert_line()
 
     def __stochastic_transform(self, word):
         transform = transforms.RandomAffine(degrees=5, scale=(0.95, 1.05), shear=5, fill=255)
@@ -25,7 +25,7 @@ class SciptTyper(object):
         left, right = np.min(pixel[:, 1]), np.max(pixel[:, 1])
         return matrix[:, left: right + 1]
 
-    def __insert_line(self):
+    def insert_line(self):
         if self.result_list is None:
             self.result_list = []
         else:
@@ -39,23 +39,27 @@ class SciptTyper(object):
         if self.result_cursor + width > self.line_width:
             if blank:
                 return
-            self.__insert_line()
+            self.insert_line()
         self.result_line[:, self.result_cursor: self.result_cursor + width] = matrix
         self.result_cursor += width
 
-    def insert_word(self, word, type='character'):
+    def insert_space(self):
+        space = np.full((self.word_size, self.word_size//2), 255, dtype=np.uint8)
+        self.__insert_matrix(space, blank=True)
+
+    def insert_word(self, word, word_type='character'):
         word = self.__stochastic_transform(word)
         matrix = self.__convert_word(word)
         blank = np.full((self.word_size, 4), 255, dtype=np.uint8)
         if self.result_cursor == 0:
             self.__insert_matrix(blank, blank=True)
         self.__insert_matrix(matrix, blank=False)
-        if type == 'punctuation':
+        if word_type == 'punctuation':
             self.__insert_matrix(blank, blank=True)
             
     def plot_result(self):
         if self.result_line is not None and self.result_cursor > 0:
-            self.__insert_line()
+            self.insert_line()
         result = np.concatenate(self.result_list, axis=0)
         return Image.fromarray(result)
 

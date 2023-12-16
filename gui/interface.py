@@ -1,5 +1,5 @@
 import gradio as gr
-from .utils import new_path, logging, MetaScript
+from .utils import new_path, logging, convert_input_text, MetaScript
 from PIL import Image
 import numpy as np
 from time import sleep, time
@@ -30,15 +30,28 @@ def clear():
     return None, None, None, None
 
 def generate(image1, image2, image3, image4, text, tprt, tprtspeed, size, width):
-    if tprt and len(text) > 300 or len(text) > 1000:
-        yield np.ones((1, 1)), 'Too long! you are occupying to mush resource! Try disable typewriter or shorten your text: {}/allowed {}'.format(len(text), 1000), '-1', t2str(-1)
+    logging.info('Get a generate request.')
+    if tprt and len(text) > 100//tprtspeed or len(text) > 1000:
+        tprt = False
+        text = text[:1000]
+        yield np.ones((1, 1)), 'Too long! you are occupying to mush resource! Current length is: {}/{} or {} with typewriter on.'.format(len(text), 1000, 100//tprtspeed), '-1', t2str(-1)
 
+    info = ''
     path = new_path()
     gpu = next_gpu() + 1
-    info = ''
+
+    logging.info('Using path: {}'.format(path))
+    logging.info('Input text: {}'.format(text))
+    text, conv_list = convert_input_text(text)
+    if len(conv_list) > 0:
+        info += 'Converted not supported character(s): {}\n'.format(conv_list)
+    logging.info('Converted text: {}'.format(text))
+
+
     ref_imgs = []
     if image1 is None and image2 is None and image3 is None and image4 is None:
-        info = 'No image uploaded. Randomly chosen.\n'
+        info += 'No image uploaded. Randomly chosen.\n'
+        logging.info('No image uploaded. Randomly chosen.')
         image1, image2, image3, image4 = random_reference()
     ref_imgs = [img for img in [image1, image2, image3, image4] if img is not None]
     while len(ref_imgs) < 4:
@@ -48,6 +61,10 @@ def generate(image1, image2, image3, image4, text, tprt, tprtspeed, size, width)
         text = '你没输入，哥。'
     if tprt and tprtspeed < 0.5:
         info += 'Typewriter speed too fast. You may fail to see the effect depending on your network delay.\n'
+
+    if info.endswith('\n'):
+        info = info[:-1]
+
     reference = MS.process_reference([Image.fromarray(im) for im in ref_imgs], path)
     t, tot = time(), 0
     for succ, out in MS.generate(text, reference, size, width, path):
@@ -61,6 +78,7 @@ def generate(image1, image2, image3, image4, text, tprt, tprtspeed, size, width)
         t = time()
     
 def random_reference():
+    logging.info('Get a random reference request.')
     image1, image2, image3, image4 = MS.get_random_reference()
     return image1, image2, image3, image4
 

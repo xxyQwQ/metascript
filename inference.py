@@ -92,11 +92,11 @@ def main(config):
             with torch.no_grad():
                 result, _, _ = generator_model(reference, template)
             result = output_transform(result.squeeze(0).detach().cpu())
-            script_typer.insert_word(result, type='character')
+            script_typer.insert_word(result, word_type='character')
         elif word in punctuation_remap.keys():
             image = Image.open(os.path.join('./assets/punctuation', '{}.png'.format(punctuation_remap[word])))
             result = align_transform(image)
-            script_typer.insert_word(result, type='punctuation')
+            script_typer.insert_word(result, word_type='punctuation')
         else:
             raise ValueError('word {} is not supported'.format(word))
     print('generate {} words from text\n'.format(len(target_text)))

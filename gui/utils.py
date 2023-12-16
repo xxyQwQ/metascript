@@ -1,3 +1,4 @@
+# coding: utf-8
 import hashlib
 import datetime
 import os
@@ -22,6 +23,20 @@ logging.basicConfig(
 
 assert torch.cuda.is_available(), 'CUDA is not available'
 
+def convert_input_text(text):
+    conv_list = []
+    punctuation_map = {",": "，", ".": "。", "?": "？", "!": "！", ":": "：", ";": "；", '"': "“", "'": "‘", "(": "（", ")": "）", "<": "《", ">": "》", "^": "……", "_": "——"}    
+    for eng, chn in punctuation_map.items():
+        if eng in text:
+            conv_list.append(eng)
+            text = text.replace(eng, chn)
+    alphabet = r'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789[]{}*&^%$#@!~`-+=|\/'
+    for char in alphabet:
+        if char in text:
+            conv_list.append(char)
+            text = text.replace(char, ' ')
+    return text, conv_list
+
 def new_path():
     current_time = datetime.datetime.now()
     current_time_str = current_time.strftime("%Y-%m-%d %H:%M:%S.%f")
@@ -39,7 +54,6 @@ def load_referance(reference_root, index_path='./assets/reference/index.pkl'):
         for character in range(len(index[writer])):
             index[writer][character] = os.path.join(reference_root, index[writer][character])
     return index
-
 
 
 class MetaScript:
@@ -98,7 +112,6 @@ class MetaScript:
         return reference
     
     def get_random_reference(self):
-        logging.info('No upload reference. Start fetching reference.')
         writer = np.random.randint(len(self.reference_list))
         character = np.random.randint(len(self.reference_list[writer]), size=4)
         file_list = [self.reference_list[writer][i] for i in character]
@@ -111,17 +124,21 @@ class MetaScript:
         script_typer = SciptTyper(size, width)
         logging.info('start generating script')
         for word in tqdm(target_text, desc='generating script'):
-            if word in self.character_remap.keys():
+            if word == ' ':
+                script_typer.insert_space()
+            elif word == '\n':
+                script_typer.insert_line()
+            elif word in self.character_remap.keys():
                 image = Image.open(os.path.join('./assets/character', '{}.png'.format(self.character_remap[word])))
                 template = self.input_transform(image).unsqueeze(0).cuda()
                 with torch.no_grad():
                     result, _, _ = self.generator_model(reference, template)
                 result = self.output_transform(result.squeeze(0).detach().cpu())
-                script_typer.insert_word(result, type='character')
+                script_typer.insert_word(result, word_type='character')
             elif word in self.punctuation_remap.keys():
                 image = Image.open(os.path.join('./assets/punctuation', '{}.png'.format(self.punctuation_remap[word])))
                 result = self.align_transform(image)
-                script_typer.insert_word(result, type='punctuation')
+                script_typer.insert_word(result, word_type='punctuation')
             else:
                 logging.error('word {} is not supported'.format(word))
                 yield False, word
