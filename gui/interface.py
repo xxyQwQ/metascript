@@ -165,6 +165,7 @@ def launch(port=8111):
         with gr.Row():
             with gr.Column():
                 gr.Markdown("### About")
+                gr.Markdown("GUI version: 1.1")
                 gr.Markdown("This demo is created and maintained by Loping151. See more info at the main site: https://www.loping151.com")
                 gr.Markdown("The main server is at Seattle, USA. The mean network delay is about 200ms.")
                 gr.Markdown("#### You may fail to see the typewriter effect when the network delay is too long or the server is too busy. If this happens, you should refresh the page and turn off the typewriter effect for faster generation.")
