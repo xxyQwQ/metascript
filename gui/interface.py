@@ -70,7 +70,8 @@ def generate(image1, image2, image3, image4, text, tprt, tprtspeed, size, width)
     reference = MS.process_reference([Image.fromarray(im) for im in ref_imgs], path)
     t, tot = time(), 0
     for succ, out, vid in MS.generate(text, reference, size, width, path):
-        tot += time() - t
+        if vid is None: # Do not count the time of video generation
+            tot += time() - t
         if not succ:
             yield None, None, 'Word {} is not supported'.format(out), '-1', t2str(-1)
             return
