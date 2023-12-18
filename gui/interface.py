@@ -32,15 +32,15 @@ def clear():
     return None, None, None, None
 
 def generate(image1, image2, image3, image4, text, tprt, tprtspeed, size, width):
-    logging.info('Get a generate request.')
-    if tprt and len(text) > 100//tprtspeed or len(text) > 1000:
-        tprt = False
-        text = text[:1000]
-        yield np.ones((1, 1)), 'Too long! you are occupying to mush resource! Current length is: {}/{} or {} with typewriter on.'.format(len(text), 1000, 100//tprtspeed), '-1', t2str(-1)
-
     info = ''
     path = new_path()
     gpu = next_gpu() + 1
+    
+    logging.info('Get a generate request.')
+    if tprt and len(text) > 100//tprtspeed or len(text) > 250:
+        tprt = False
+        text = text[:300]
+        info += 'Too long! you are occupying to mush resource! Current length is: {}/{} or {} with typewriter on.\n'.format(len(text), 250, 100//tprtspeed)
 
     logging.info('Using path: {}'.format(path))
     logging.info('Input text: {}'.format(text))
@@ -169,8 +169,9 @@ def launch(port=8111):
         with gr.Row():
             with gr.Column():
                 gr.Markdown("### About")
-                gr.Markdown("GUI version: 1.4")
-                # updated video generation from 1.3
+                gr.Markdown("GUI version: 1.5")
+                # 1.5: updated info and restrictions from 1.4
+                # 1.4: updated video generation from 1.3
                 # 1.3: updated allowed characters(to be replaced with space) from 1.2
                 # 1.2: updated typewriter effect from 1.1
                 # 1.1: reorganized layout from 1.0

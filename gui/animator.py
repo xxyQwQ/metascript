@@ -10,8 +10,8 @@ def make_video(folder):
     while os.path.exists(f"{folder}/{len(image_sequence)}.png"):
         image_sequence.append(f"{folder}/{len(image_sequence)}.png")
 
-    fade_duration = 0.1
-    fps = 60
+    fade_duration = 0.05
+    fps = 30
     fade_frames = int(fade_duration * fps + 1)  # 渐变持续的帧数
 
     fourcc = cv2.VideoWriter_fourcc(*'mp4v')
