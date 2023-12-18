@@ -9,6 +9,7 @@ import pickle
 from tqdm import tqdm
 from PIL import Image
 from torchvision import transforms
+from .animator import make_video
 
 import sys
 sys.path.append('..')
@@ -123,7 +124,7 @@ class MetaScript:
         self.resize_output(size)
         script_typer = SciptTyper(size, width)
         logging.info('start generating script')
-        for word in tqdm(target_text, desc='generating script'):
+        for idx, word in tqdm(enumerate(target_text), desc='generating script'): # to make video
             if word == ' ':
                 script_typer.insert_space()
             elif word == '\n':
@@ -141,8 +142,10 @@ class MetaScript:
                 script_typer.insert_word(result, word_type='punctuation')
             else:
                 logging.error('word {} is not supported'.format(word))
-                yield False, word
-            yield True, script_typer.plot_result_gui()
+                yield False, word, None
+            result_idx = script_typer.plot_result_gui()
+            Image.fromarray(result_idx).save(os.path.join(path, str(idx)+'.png'))
+            yield True, result_idx, None
         result_image = script_typer.plot_result()
         result_image.save(os.path.join(path, 'result.png'))
-
+        yield True, result_image, make_video(path)

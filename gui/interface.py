@@ -3,6 +3,8 @@ from .utils import new_path, logging, convert_input_text, MetaScript
 from PIL import Image
 import numpy as np
 from time import sleep, time
+import warnings
+warnings.filterwarnings("ignore", category=UserWarning, module="gradio.components.video")
 
 _TITLE = "Metascript Demo"
 
@@ -67,12 +69,12 @@ def generate(image1, image2, image3, image4, text, tprt, tprtspeed, size, width)
 
     reference = MS.process_reference([Image.fromarray(im) for im in ref_imgs], path)
     t, tot = time(), 0
-    for succ, out in MS.generate(text, reference, size, width, path):
+    for succ, out, vid in MS.generate(text, reference, size, width, path):
         tot += time() - t
         if not succ:
-            yield None, 'Word {} is not supported'.format(out), '-1', t2str(-1)
+            yield None, None, 'Word {} is not supported'.format(out), '-1', t2str(-1)
             return
-        yield out, info, gpu, t2str(tot)
+        yield out, vid, info, gpu, t2str(tot)
         if tprt:
             sleep(tprtspeed)
         t = time()
@@ -83,7 +85,7 @@ def random_reference():
     return image1, image2, image3, image4
 
 def launch(port=8111):
-    with gr.Blocks(title=_TITLE, css=css) as demo:
+    with gr.Blocks(title=_TITLE, css=css, theme=gr.themes.Default()) as demo:
         with gr.Row():    
             with gr.Column():
                 gr.Markdown("# Metascript Demo")
@@ -115,7 +117,7 @@ def launch(port=8111):
                     rand_buttom = gr.Button("Select Random Reference")
                     clear_bottom = gr.Button("Clear Current Reference")
                 with gr.Row():
-                    tprt = gr.Checkbox(label="Output like typewriter", value=True)
+                    tprt = gr.Checkbox(label="Output like typewriter", value=False)
                     tprtspeed = gr.Slider(
                         label="Typewriter Speed",
                         minimum=0,
@@ -137,12 +139,13 @@ def launch(port=8111):
                     step=50,
                     value=1600
                     )
-            gen_buttom = gr.Button("Generate")
+            gen_buttom = gr.Button("Generate", variant='primary')
             
         with gr.Row():
             with gr.Column():
                 gr.Markdown("### Generate Result")
                 gen_res = gr.Image(label="Generate Result", show_label=False)
+                gen_vid = gr.Video(label="Generate Video", show_label=False, autoplay=True, format='mp4')
             
         rand_buttom.click(
             fn=random_reference,
@@ -159,13 +162,18 @@ def launch(port=8111):
         gen_buttom.click(
             fn=generate,
             inputs=[img_ref1, img_ref2, img_ref3, img_ref4, text2gen, tprt, tprtspeed, wsize, width],
-            outputs=[gen_res, info, gpu, infert]
+            outputs=[gen_res, gen_vid, info, gpu, infert]
         )
         
         with gr.Row():
             with gr.Column():
                 gr.Markdown("### About")
-                gr.Markdown("GUI version: 1.1")
+                gr.Markdown("GUI version: 1.4")
+                # updated video generation from 1.3
+                # 1.3: updated allowed characters(to be replaced with space) from 1.2
+                # 1.2: updated typewriter effect from 1.1
+                # 1.1: reorganized layout from 1.0
+                # init version 1.0: complete functionality of generating script
                 gr.Markdown("This demo is created and maintained by Loping151. See more info at the main site: https://www.loping151.com")
                 gr.Markdown("The main server is at Seattle, USA. The mean network delay is about 200ms.")
                 gr.Markdown("#### You may fail to see the typewriter effect when the network delay is too long or the server is too busy. If this happens, you should refresh the page and turn off the typewriter effect for faster generation.")
