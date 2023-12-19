@@ -93,7 +93,7 @@ python training.py
 
 The template configuration file `config/inference.yaml` contains the necessary arguments for inference. You should correctly set `model_path` as the path to your generator model. Then `reference_path` should be the path to your reference directory, which contains images for style reference. We provide `assets/reference` as an example.
 
-We provide a pre-trained model [here](https://pan.baidu.com/s/1oSAKu_DHIN2pIvJoilsrQw?pwd=1024), whose `reference_count` is 4. Notice that `reference_count` means the number of reference images used by the model, which should be consistent with your model setting. If you provide more reference images than this number, only a subset of them will be actually used. Do not modify it unless you know what you are doing.
+We provide a pre-trained model [here](https://pan.baidu.com/s/1UGHPKFVSvRj2QY_PbSjJGQ?pwd=1024), whose `reference_count` is 4. Notice that `reference_count` means the number of reference images used by the model, which should be consistent with your model setting. If you provide more reference images than this number, only a subset of them will be actually used. Do not modify it unless you know what you are doing.
 
 Fill your input text in `target_text` and run the following command to generate the result:
 
