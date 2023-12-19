@@ -13,6 +13,8 @@ MetaScript: Few-Shot Handwritten Chinese Content Generation via Generative Adver
     <a href="https://github.com/xxyQwQ"><strong>Xiangyuan Xue</strong></a>
     &nbsp;
     <a href="https://github.com/wdask"><strong>Zhiyuan Zhang</strong></a>
+    <br />    
+    <a href="http://cv2023.loping151.com/?__theme=light" align="center"><strong>Online Demo</strong></a>
     <br />
 </p>
 
