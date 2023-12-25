@@ -13,9 +13,12 @@ MetaScript: Few-Shot Handwritten Chinese Content Generation via Generative Adver
     <a href="https://github.com/xxyQwQ"><strong>Xiangyuan Xue</strong></a>
     &nbsp;
     <a href="https://github.com/wdask"><strong>Zhiyuan Zhang</strong></a>
-    <br />    
-    <a href="http://cv2023.loping151.com/?__theme=light" align="center"><strong>Online Demo</strong></a>
     <br />
+</p>
+<p align="center">
+    <a href='assets/sample/report.pdf'> <img alt='Project Report' src='https://img.shields.io/badge/Project-Report-blue?style=flat&logo=googlescholar&logoColor=blue'> </a>
+    <a href="assets/sample/slides.pdf"> <img alt="Presentation Slides" src="https://img.shields.io/badge/Presentation-Slides-green?logo=googlenews&logoColor=green"> </a>
+    <a href="http://cv2023.loping151.com/?__theme=light"> <img alt="Online Demo" src="https://img.shields.io/badge/Online-Demo-red?logo=googleads&logoColor=red"> </a>
 </p>
 
 This project aims to generate handwritten Chinese content within several style references based on generative adversarial networks. Our model can generate 128x128 resolution images of handwritten Chinese characters. Then the complete content is synthesized with traditional computer vision techniques. Some results are shown as follows.
@@ -26,7 +29,7 @@ This project aims to generate handwritten Chinese content within several style r
 
 ![result](assets/sample/result.png)
 
-## Requirements
+## 🛠️ Requirements
 
 To ensure the code runs correctly, the following packages are required:
 
@@ -57,7 +60,7 @@ You can install them following the instructions below.
 
 The latest version is recommended for all the packages, but make sure that your CUDA version is compatible with your `pytorch`.
 
-## Training
+## 🚀 Training
 
 The dataset used for training is mainly adapted from [CASIA-HWDB-1.1](http://www.nlpr.ia.ac.cn/databases/handwriting/Offline_database.html). We put the characters by the same writer into the same directory. The folder name represents the writer and the file name represents the character. We render the template characters from [Source-Han-Sans](https://github.com/adobe-fonts/source-han-sans). You can download the dataset [here](https://pan.baidu.com/s/11T8jgBQUh8f0-H5FbuO84w?pwd=1024) and extract it.
 
@@ -89,7 +92,7 @@ Run the following command to train the model:
 python training.py
 ```
 
-## Inference
+## 💡 Inference
 
 The template configuration file `config/inference.yaml` contains the necessary arguments for inference. You should correctly set `model_path` as the path to your generator model. Then `reference_path` should be the path to your reference directory, which contains images for style reference. We provide `assets/reference` as an example.
 
@@ -101,7 +104,7 @@ Fill your input text in `target_text` and run the following command to generate 
 python inference.py
 ```
 
-## GUI Demo and API
+## 🤖 GUI Demo and API
 
 We've built a GUI module inside this project. To run GUI, you need to install gradio in your venv:
 
