@@ -117,3 +117,17 @@ Then run
 python -m gui [--port PORT]
 ```
 to launch GUI locally. The default port is 8111.
+
+
+## 📃 Citation
+
+```
+@misc{xue2023metascript,
+      title={MetaScript: Few-Shot Handwritten Chinese Content Generation via Generative Adversarial Networks}, 
+      author={Xiangyuan Xue and Kailing Wang and Jiazi Bu and Qirui Li and Zhiyuan Zhang},
+      year={2023},
+      eprint={2312.16251},
+      archivePrefix={arXiv},
+      primaryClass={cs.CV}
+}
+```
