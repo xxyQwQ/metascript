@@ -18,7 +18,7 @@ MetaScript: Few-Shot Handwritten Chinese Content Generation via Generative Adver
 <p align="center">
     <a href='assets/sample/report.pdf'> <img alt='Project Report' src='https://img.shields.io/badge/Project-Report-blue?style=flat&logo=googlescholar&logoColor=blue'> </a>
     <a href="assets/sample/slides.pdf"> <img alt="Presentation Slides" src="https://img.shields.io/badge/Presentation-Slides-green?logo=googlenews&logoColor=green"> </a>
-    <a href="http://cv2023.loping151.com/?__theme=light"> <img alt="Online Demo" src="https://img.shields.io/badge/Online-Demo-red?logo=googleads&logoColor=red"> </a>
+<!--     <a href="http://cv2023.loping151.com/?__theme=light"> <img alt="Online Demo" src="https://img.shields.io/badge/Online-Demo-red?logo=googleads&logoColor=red"> </a> -->
 </p>
 
 This project aims to generate handwritten Chinese content within several style references based on generative adversarial networks. Our model can generate 128x128 resolution images of handwritten Chinese characters. Then the complete content is synthesized with traditional computer vision techniques. Some results are shown as follows.
